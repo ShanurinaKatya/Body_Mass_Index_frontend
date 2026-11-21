@@ -1,7 +1,7 @@
 import type { FC, MouseEvent } from 'react'
 import { Button, Card } from 'react-bootstrap'
 
-import { toMediaUrl } from '../../shared/lib/media/patients_categories'
+import { publicUrl, toMediaUrl } from '../../shared/lib/media/patients_categories'
 import type { PatientsCategorie } from '../../shared/model/patients_categories'
 
 interface ServiceCardProps {
@@ -26,10 +26,10 @@ export const ServiceCard: FC<ServiceCardProps> = ({
         <Card.Img
           className="card-image"
           variant="top"
-          src={toMediaUrl(service.image_url) || '/DefaultImage.jpg'}
+          src={toMediaUrl(service.image_url) || publicUrl('/DefaultImage.jpg')}
           alt={service.name}
           onError={(event) => {
-            event.currentTarget.src = '/DefaultImage.jpg'
+            event.currentTarget.src = publicUrl('/DefaultImage.jpg')
           }}
         />
         <div className="card-content">

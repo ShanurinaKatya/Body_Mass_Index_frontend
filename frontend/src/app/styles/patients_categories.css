@@ -640,9 +640,10 @@ body {
 }
 
 /* ===== CARDS GRID ===== */
+/* Базовый уровень (мобильный): 1 колонка, минимальная ширина карточки 300px */
 .cards-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(300px, 1fr);
     gap: var(--spacing-12);
     margin-top: var(--spacing-20);
 }
@@ -887,4 +888,38 @@ body {
 
 .feed-sidebar-item--like.feed-sidebar-item--clickable {
     cursor: pointer;
+}
+
+/* ===== LAB 7: АДАПТИВНОСТЬ ===== */
+/* Контейнеры страниц, липкий хедер и нижняя панель расширяются вместе. */
+@media (min-width: 768px) {
+    .cards-container,
+    .add-container,
+    .auth-container,
+    .page-header,
+    .tab-bar,
+    .feed-container {
+        max-width: 768px;
+    }
+
+    /* Средняя ширина: 2 колонки карточек, каждая не уже 300px */
+    .cards-grid {
+        grid-template-columns: repeat(2, minmax(300px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .cards-container,
+    .add-container,
+    .auth-container,
+    .page-header,
+    .tab-bar,
+    .feed-container {
+        max-width: 1000px;
+    }
+
+    /* Большая ширина: 3 колонки карточек, каждая не уже 300px */
+    .cards-grid {
+        grid-template-columns: repeat(3, minmax(300px, 1fr));
+    }
 }

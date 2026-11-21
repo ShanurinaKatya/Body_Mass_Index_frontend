@@ -10,7 +10,7 @@ import {
 } from '../../entities/service/model/patients_categories'
 import { NextService } from '../../features/next-service/patients_categories'
 import { ToggleDescription } from '../../features/toggle-description/patients_categories'
-import { toMediaUrl } from '../../shared/lib/media/patients_categories'
+import { publicUrl, toMediaUrl } from '../../shared/lib/media/patients_categories'
 import type { PatientsCategorie } from '../../shared/model/patients_categories'
 
 interface FeedContentProps {
@@ -30,8 +30,8 @@ const FeedContent: FC<FeedContentProps> = ({
   const [videoError, setVideoError] = useState(false)
 
   const videoSrc = videoError
-    ? '/Default.mp4'
-    : toMediaUrl(feed.video_url) || '/Default.mp4'
+    ? publicUrl('/Default.mp4')
+    : toMediaUrl(feed.video_url) || publicUrl('/Default.mp4')
 
   return (
     <div className="feed-container">
@@ -50,7 +50,7 @@ const FeedContent: FC<FeedContentProps> = ({
           <div className="feed-sidebar-item">
             <div className="feed-sidebar-icon">
               <img
-                src="/free-icon-weight.png"
+                src={publicUrl('/free-icon-weight.png')}
                 alt="Вес"
                 style={{ width: '20px', height: '20px', objectFit: 'contain' }}
               />

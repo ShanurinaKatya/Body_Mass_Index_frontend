@@ -1,6 +1,10 @@
 .env
 backend/.env
 
+# HTTPS-сертификаты (приватные ключи никогда не публиковать)
+*.key
+*.crt
+
 # Logs
 logs
 *.log

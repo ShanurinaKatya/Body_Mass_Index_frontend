@@ -1,7 +1,8 @@
-# Лабораторная работа №6. Завершение интерфейса пользователя в React
+# Лабораторные работы №6–7. Интерфейс пользователя в React. Адаптивность, PWA, развёртывание
 
 Веб-приложение «ИМТ Калькулятор»: SPA на React с менеджером состояний Redux Toolkit,
 авторизацией по JWT и взаимодействием с Go-веб-сервисом через кодогенерацию Swagger и Axios.
+Лабораторная работа №7 добавляет адаптивность, PWA, развёртывание на GitHub Pages и HTTPS.
 
 ## Структура репозитория
 
@@ -196,18 +197,78 @@ store
 
 Страница доступна только гостям: авторизованный пользователь перенаправляется на `/feed`. Авторизация выполняется вручную через axios (`POST /api/users/auth`), без сгенерированного клиента и thunk: JWT сохраняется в `localStorage` под ключом `patients_categories.jwt`, затем состояние пользователя обновляется в Redux и выполняется переход на ленту. После входа в панели навигации «Вход» заменяется на «Выход».
 
-## Порядок показа (скриншоты)
+## Лабораторная работа №7
 
-1. **1–2** — `/feed` и `/cards` без запущенного сервиса (mock, режим гостя).
-2. **3–6** — `/feed`, `/cards`, `/add`, `/login` с запущенным бэкендом.
-3. **7–8** — изменение записи в БД через Adminer и отображение изменений во фронтенде.
-4. **9** — вход, F5: Redux снова гость, JWT остаётся в Local Storage.
-5. **10** — JWT из Application используется в Insomnia/Postman:
-   `GET /api/patients_categories` с `Authorization: Bearer <token>`;
-   у своих услуг `is_creator = 1`.
-6. **11–12** — состояния Redux в DevTools и axios в сгенерированном `Api.ts`.
-7. **13–14** — thunk'и на сгенерированном клиенте с тематическими именами.
-8. **15–16** — Network: запросы `/api/...` через прокси и `/s3/...` к MinIO.
+### Адаптивность (`frontend/src/app/styles/patients_categories.css`)
+
+Сетка плитки и контейнеры страниц масштабируются по ширине экрана.
+Минимальная ширина карточки — `300px`, `gap` — `12px`.
+
+| Ширина экрана | Колонки карточек | Контейнеры (`.cards-container`, `.page-header`, `.tab-bar`, `.feed-container`, `.add-container`, `.auth-container`) |
+|---|---|---|
+| `< 768px` | 1: `minmax(300px, 1fr)` | `max-width: 390px` |
+| `≥ 768px` | 2: `repeat(2, minmax(300px, 1fr))` | `max-width: 768px` |
+| `≥ 1024px` | 3: `repeat(3, minmax(300px, 1fr))` | `max-width: 1000px` |
+
+Конкретные значения для показа (скриншоты 15–17):
+
+- `.cards-grid` (базовый уровень): `grid-template-columns: minmax(300px, 1fr)` — 1 колонка, карточка ≈ 350px при контейнере 390px;
+- `@media (min-width: 768px)`: `repeat(2, minmax(300px, 1fr))` — 2 колонки, карточки ≈ 358px ((768 − 40 − 12) / 2);
+- `@media (min-width: 1024px)`: `repeat(3, minmax(300px, 1fr))` — 3 колонки, карточки ≈ 312px ((1000 − 40 − 24) / 3).
+
+Адаптив покрывает страницы `/feed`, `/cards`, `/add` (и `/login` — общие контейнеры и липкий хедер с нижней панелью).
+
+### PWA (`vite-plugin-pwa`)
+
+- Плагин `VitePWA` в `frontend/vite.config.ts`: `registerType: 'autoUpdate'`, `devOptions.enabled: true`, собственный `manifest` (name «ИМТ Калькулятор», `start_url`/`scope` = `/Body_Mass_Index_frontend/`, `display: standalone`, иконки 192×192 и 512×512 — `public/icon-192.png`, `public/icon-512.png`);
+- Регистрация service worker в `frontend/src/app/patients_categories.tsx`: `registerSW()` из `virtual:pwa-register`;
+- Типы `vite-plugin-pwa/info.d.ts` и `vite-plugin-pwa/client.d.ts` добавлены в `tsconfig.app.json`;
+- Сборка (`npm run build`) кладёт в `dist/`: `manifest.webmanifest`, `sw.js`, `workbox-*.js` + все файлы из `public/` (в том числе `Default.mp4`, `DefaultImage.jpg`).
+
+На GitHub Pages работает mock: запрос `/api/...` падает → гость получает `SERVICES_MOCK`.
+
+### Развёртывание на GitHub Pages
+
+- `base: '/Body_Mass_Index_frontend/'` в `vite.config.ts`; basename роутера — `import.meta.env.BASE_URL`;
+- пути к файлам из `public/` собираются хелпером `publicUrl()` (`shared/lib/media`) — без этого на Pages 404;
+- зависимости и скрипт: `gh-pages`, `"deploy": "gh-pages -d dist"`.
+
+Порядок деплоя (push выполняется вручную):
+
+```bash
+cd frontend
+npm install
+npm run build          # bundle в dist/ (фото и видео по умолчанию внутри)
+npm run deploy         # публикация dist/ в ветку gh-pages (это push)
+# GitHub → Settings → Pages → Source: Deploy from branch → ветка gh-pages → Save
+# Приложение: https://ShanurinaKatya.github.io/Body_Mass_Index_frontend/
+```
+
+### HTTPS (Node.js реверс-прокси)
+
+Vite dev-сервер — это реверс-прокси (`/api` → `:8080`, `/s3` → `:9000`). Для HTTPS:
+
+```bash
+npm install -g mkcert      # генерация файлов сертификата
+cd frontend
+mkcert create-ca           # ca.crt, ca.key
+mkcert create-cert --domains localhost 127.0.0.1 ::1 <IP-ноутбука>   # cert.crt, cert.key
+```
+
+- ключи `*.key` / `*.crt` добавлены в `.gitignore` — **не публиковать**;
+- `vite.config.ts`: `server.https` (считывает `cert.key`/`cert.crt`), плагин `mkcert()` (`vite-plugin-mkcert`) и `server.host: true` — без `host` сервер слушает только localhost и телефон не подключится;
+- доступ с телефона в одной локальной сети: `https://<IP-ноутбука>:3000/Body_Mass_Index_frontend/` → прокси → Go-сервис `:8080`.
+
+Чтобы телефон доверялся сертификату, установите `ca.crt` на устройство (или подтвердите предупреждение браузера).
+
+## Порядок показа (скриншоты, лаба 7)
+
+1. **1–2** — GitHub Pages (mock, гость) на телефоне, установка PWA на главный экран.
+2. **3–6** — PWA: применить фильтр по возрасту на `/cards`, перейти «Подробнее» на `/feed`, вернуться — значение фильтра старое (Redux переживает SPA-переход).
+3. **7** — адаптивный режим браузера, изменение ширины: 1 → 2 → 3 колонки карточек.
+4. **8–12** — телефон по IP-адресу ноутбука (HTTPS), вход, три страницы с бэкендом (`/feed`, `/cards`, `/add`).
+5. **13–14** — файлы сертификатов (`ca.crt`, `cert.crt`, `cert.key`) и HTTPS-соединение в браузере.
+6. **15–17** — код настроек сетки: `minmax(300px, 1fr)` и media query с конкретными значениями колонок и ширины контейнеров.
 
 ## Проверки
 

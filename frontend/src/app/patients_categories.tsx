@@ -7,6 +7,7 @@ import {
   Outlet,
   RouterProvider,
 } from 'react-router-dom'
+import { registerSW } from 'virtual:pwa-register'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/patients_categories.css'
@@ -27,19 +28,24 @@ const AppLayout = () => (
   </>
 )
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <AppLayout />,
-    children: [
-      { index: true, element: <Navigate to="/feed" replace /> },
-      { path: 'feed', element: <FeedPage /> },
-      { path: 'cards', element: <TilePage /> },
-      { path: 'add', element: <AddPage /> },
-      { path: 'login', element: <LoginPage /> },
-    ],
-  },
-])
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <AppLayout />,
+      children: [
+        { index: true, element: <Navigate to="/feed" replace /> },
+        { path: 'feed', element: <FeedPage /> },
+        { path: 'cards', element: <TilePage /> },
+        { path: 'add', element: <AddPage /> },
+        { path: 'login', element: <LoginPage /> },
+      ],
+    },
+  ],
+  // basename — путь репозитория на GitHub Pages (/Body_Mass_Index_frontend),
+  // в dev совпадает с base из vite.config.ts.
+  { basename: import.meta.env.BASE_URL.replace(/\/$/, '') },
+)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -48,3 +54,8 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </StrictMode>,
 )
+
+// PWA: регистрация service worker (vite-plugin-pwa).
+if ('serviceWorker' in navigator) {
+  registerSW()
+}

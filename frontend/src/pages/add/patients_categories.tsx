@@ -16,11 +16,11 @@ import {
   publishService,
 } from '../../entities/service/model/patients_categories'
 import { ROUTES } from '../../shared/config/patients_categories'
-import { toMediaUrl } from '../../shared/lib/media/patients_categories'
+import { publicUrl, toMediaUrl } from '../../shared/lib/media/patients_categories'
 import type { PatientsCategorie } from '../../shared/model/patients_categories'
 
-const DEFAULT_IMAGE = '/DefaultImage.jpg'
-const DEFAULT_VIDEO = '/Default.mp4'
+const DEFAULT_IMAGE = publicUrl('/DefaultImage.jpg')
+const DEFAULT_VIDEO = publicUrl('/Default.mp4')
 
 interface MediaPlaceholderProps {
   preview: string
