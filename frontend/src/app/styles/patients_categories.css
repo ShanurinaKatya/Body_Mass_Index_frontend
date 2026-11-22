@@ -93,14 +93,12 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== TAB BAR (centered, width 390px) ===== */
+/* ===== TAB BAR (centered, full width) ===== */
 .tab-bar {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
     width: 100%;
-    max-width: 390px;
     height: 72px;
     background: var(--background-primary);
     border-top: 2px solid var(--stroke-dark);
@@ -145,7 +143,6 @@ body {
 .feed-container {
     position: relative;
     width: 100%;
-    max-width: 390px;
     height: calc(100vh - 56px);
     overflow: hidden;
     background: #000;
@@ -319,7 +316,6 @@ body {
 
 .add-container {
     width: 100%;
-    max-width: 390px;
     margin: 0 auto;
     padding: 20px 20px 100px;
 }
@@ -327,7 +323,6 @@ body {
 /* ===== CARDS PAGE ===== */
 .cards-container {
     width: 100%;
-    max-width: 390px;
     margin: 0 auto;
     padding: 20px 20px 100px;
 }
@@ -338,7 +333,6 @@ body {
     top: 0;
     z-index: 50;
     width: 100%;
-    max-width: 390px;
     margin: 0 auto;
     background: var(--color-white);
     padding: 16px 20px;
@@ -827,7 +821,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-16);
-    max-width: 390px;
+    width: 100%;
     margin: 0 auto;
     padding: var(--spacing-20) var(--spacing-16) 120px;
 }
@@ -891,17 +885,8 @@ body {
 }
 
 /* ===== LAB 7: АДАПТИВНОСТЬ ===== */
-/* Контейнеры страниц, липкий хедер и нижняя панель расширяются вместе. */
+/* Контейнеры во всю ширину страницы; media query меняют только число колонок сетки. */
 @media (min-width: 768px) {
-    .cards-container,
-    .add-container,
-    .auth-container,
-    .page-header,
-    .tab-bar,
-    .feed-container {
-        max-width: 768px;
-    }
-
     /* Средняя ширина: 2 колонки карточек, каждая не уже 300px */
     .cards-grid {
         grid-template-columns: repeat(2, minmax(300px, 1fr));
@@ -909,15 +894,6 @@ body {
 }
 
 @media (min-width: 1024px) {
-    .cards-container,
-    .add-container,
-    .auth-container,
-    .page-header,
-    .tab-bar,
-    .feed-container {
-        max-width: 1000px;
-    }
-
     /* Большая ширина: 3 колонки карточек, каждая не уже 300px */
     .cards-grid {
         grid-template-columns: repeat(3, minmax(300px, 1fr));

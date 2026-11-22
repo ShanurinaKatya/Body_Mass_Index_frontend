@@ -201,20 +201,20 @@ store
 
 ### Адаптивность (`frontend/src/app/styles/patients_categories.css`)
 
-Сетка плитки и контейнеры страниц масштабируются по ширине экрана.
+Контейнеры страниц (`.cards-container`, `.page-header`, `.tab-bar`, `.feed-container`, `.add-container`, `.auth-container`) — `width: 100%` без `max-width`: сетка заполняет страницу, и **ширина карточки меняется непрерывно вместе с шириной окна**. Media query меняют только число колонок.
 Минимальная ширина карточки — `300px`, `gap` — `12px`.
 
-| Ширина экрана | Колонки карточек | Контейнеры (`.cards-container`, `.page-header`, `.tab-bar`, `.feed-container`, `.add-container`, `.auth-container`) |
-|---|---|---|
-| `< 768px` | 1: `minmax(300px, 1fr)` | `max-width: 390px` |
-| `≥ 768px` | 2: `repeat(2, minmax(300px, 1fr))` | `max-width: 768px` |
-| `≥ 1024px` | 3: `repeat(3, minmax(300px, 1fr))` | `max-width: 1000px` |
+| Ширина экрана | Колонки карточек (`.cards-grid`) |
+|---|---|
+| `< 768px` | 1: `minmax(300px, 1fr)` |
+| `≥ 768px` | 2: `repeat(2, minmax(300px, 1fr))` |
+| `≥ 1024px` | 3: `repeat(3, minmax(300px, 1fr))` |
 
 Конкретные значения для показа (скриншоты 15–17):
 
-- `.cards-grid` (базовый уровень): `grid-template-columns: minmax(300px, 1fr)` — 1 колонка, карточка ≈ 350px при контейнере 390px;
-- `@media (min-width: 768px)`: `repeat(2, minmax(300px, 1fr))` — 2 колонки, карточки ≈ 358px ((768 − 40 − 12) / 2);
-- `@media (min-width: 1024px)`: `repeat(3, minmax(300px, 1fr))` — 3 колонки, карточки ≈ 312px ((1000 − 40 − 24) / 3).
+- `.cards-grid` (базовый уровень): `grid-template-columns: minmax(300px, 1fr)` — 1 колонка, карточка растёт от ширины окна (375px экран → ~335px, 767px → ~727px);
+- `@media (min-width: 768px)`: `repeat(2, minmax(300px, 1fr))` — 2 колонки, карточки `(окно − 40 − 12) / 2` (768px → 358px, 1023px → 485px);
+- `@media (min-width: 1024px)`: `repeat(3, minmax(300px, 1fr))` — 3 колонки, карточки `(окно − 40 − 24) / 3` (1024px → 320px, 1440px → 459px, 1920px → 619px).
 
 Адаптив покрывает страницы `/feed`, `/cards`, `/add` (и `/login` — общие контейнеры и липкий хедер с нижней панелью).
 
