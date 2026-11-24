@@ -4,6 +4,7 @@ backend/.env
 # HTTPS-сертификаты (приватные ключи никогда не публиковать)
 *.key
 *.crt
+rootCA*.pem
 
 # Logs
 logs
