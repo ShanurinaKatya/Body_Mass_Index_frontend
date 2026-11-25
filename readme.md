@@ -1,4 +1,4 @@
-# Лабораторные работы №6–7. Интерфейс пользователя в React. Адаптивность, PWA, развёртывание
+# Лабораторные работы №7. Адаптивность, PWA, развёртывание
 
 Веб-приложение «ИМТ Калькулятор»: SPA на React с менеджером состояний Redux Toolkit,
 авторизацией по JWT и взаимодействием с Go-веб-сервисом через кодогенерацию Swagger и Axios.
@@ -56,31 +56,6 @@ npm run dev            # http://localhost:3000
 Кодогенерация берёт спецификацию из `http://localhost:8080/swagger/doc.json`,
 а если сервис не запущен — из `backend/docs/swagger.json`.
 
-### Тестовые данные
-
-После запуска сервиса создайте пользователя и несколько услуг:
-
-```bash
-# Регистрация
-curl -X POST http://localhost:8080/api/users/register \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"123456"}'
-
-# Токен
-TOKEN=$(curl -s -X POST http://localhost:8080/api/users/auth \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"123456"}' | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
-
-# Черновик
-curl -X POST http://localhost:8080/api/patients_categories \
-  -H "Authorization: Bearer $TOKEN" -F 'name=ИМТ для школьников'
-
-# Публикация (id из ответа предыдущего запроса)
-curl -X PUT http://localhost:8080/api/patients_categories/1/publish \
-  -H "Authorization: Bearer $TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"description":"Расчёт ИМТ для школьников","age":15,"weight":55}'
-```
 
 ## Обратный прокси (CORS)
 
@@ -197,7 +172,6 @@ store
 
 Страница доступна только гостям: авторизованный пользователь перенаправляется на `/feed`. Авторизация выполняется вручную через axios (`POST /api/users/auth`), без сгенерированного клиента и thunk: JWT сохраняется в `localStorage` под ключом `patients_categories.jwt`, затем состояние пользователя обновляется в Redux и выполняется переход на ленту. После входа в панели навигации «Вход» заменяется на «Выход».
 
-## Лабораторная работа №7
 
 ### Адаптивность (`frontend/src/app/styles/patients_categories.css`)
 
@@ -210,7 +184,6 @@ store
 | `≥ 768px` | 2: `repeat(2, minmax(300px, 1fr))` |
 | `≥ 1024px` | 3: `repeat(3, minmax(300px, 1fr))` |
 
-Конкретные значения для показа (скриншоты 15–17):
 
 - `.cards-grid` (базовый уровень): `grid-template-columns: minmax(300px, 1fr)` — 1 колонка, карточка растёт от ширины окна (375px экран → ~335px, 767px → ~727px);
 - `@media (min-width: 768px)`: `repeat(2, minmax(300px, 1fr))` — 2 колонки, карточки `(окно − 40 − 12) / 2` (768px → 358px, 1023px → 485px);
